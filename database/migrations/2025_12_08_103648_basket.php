@@ -20,6 +20,24 @@ return new class extends Migration
                 $table->string("username");
                 $table->string("status");
                 $table->timestamps();
+
+                //relations
+                $table->foreign("tr_code")
+                    ->references("tr_code")
+                    ->on("products")
+                    ->onDelete("cascade")
+                    ->onUpdate("cascade");
+
+                $table->foreign("username")
+                    ->references("username")
+                    ->on("users")
+                    ->onDelete("cascade")
+                    ->onUpdate("cascade");
+
+                //indexes
+                $table->index("tr_code");
+                $table->index("username");
+                $table->index("status");
             });
         }
     }
