@@ -22,6 +22,19 @@ return new class extends Migration
                 $table->string("user_agent");
                 $table->string("op_type");
                 $table->timestamps();
+
+                //relations
+                $table->foreign("username")
+                    ->references("username")
+                    ->on("users")
+                    ->onDelete("cascade")
+                    ->onUpdate("cascade");
+
+                $table->foreign("tr_code")
+                    ->references("tr_code")
+                    ->on("products")
+                    ->onDelete("cascade")
+                    ->onUpdate("cascade");
             });
         }
     }
