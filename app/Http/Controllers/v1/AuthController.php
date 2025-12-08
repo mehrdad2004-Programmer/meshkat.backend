@@ -26,18 +26,21 @@ class AuthController extends Controller
             $all['ip_address'] = $request->ip();
             $all['user_agent'] = $request->userAgent();
             $all['op_type'] = "create_user";
-            $all['username'] = Auth()->user()->username; // this will get logged in user
-            $all['tr_code'] = $request->username; // this will get registered user , username
 
-            DB::beginTransaction();
-            User::create($all);
-            AccessLogsModel::create($all);
-            DB::commit();
+            $inserted = User::create($all);
+
+            if(!$inserted){
+                return response()->json([
+                    "msg" => "not inserted",
+                    "statuscode" => 400
+                ], 400);
+            }
 
             return response()->json([
                 "msg" => "inserted",
                 "statuscode" => 201
             ], 201);
+
         }catch(\Exception $e){
             return response()->json([
                 "msg" => $e->getMessage() . " at line " . $e->getLine(),
@@ -62,6 +65,54 @@ class AuthController extends Controller
                 "statuscode" => 400
             ], 400);
 
+        }catch(\Exception $e){
+            return response()->json([
+                "msg" => $e->getMessage() . " at line " . $e->getLine(),
+                "statuscode" => 500
+            ], 500);
+        }
+    }
+
+    public function changePassword(Request $request){
+        try{
+            $updated = User::where("username", $request->username)->update([
+                "password" => $request->password
+            ]);
+
+            if(!$updated){
+                return response()->json([
+                    "msg" => "not updated",
+                    "statuscode" => 400
+                ], 400);
+            }
+
+            return response()->json([
+                "msg" => "updated",
+                "statuscode" => 200
+            ], 200);
+        }catch(\Exception $e){
+            return response()->json([
+                "msg" => $e->getMessage() . " at line " . $e->getLine(),
+                "statuscode" => 500
+            ], 500);
+        }
+    }
+
+    public function changeInfo(Request $request){
+        try{
+            $updated = User::where("username", $request->username)->update($request->all());
+
+            if(!$updated){
+                return response()->json([
+                    "msg" => "not updated",
+                    "statuscode" => 400
+                ], 400);
+            }
+
+            return response()->json([
+                "msg" => "updated",
+                "statuscode" => 200
+            ], 200);
         }catch(\Exception $e){
             return response()->json([
                 "msg" => $e->getMessage() . " at line " . $e->getLine(),
