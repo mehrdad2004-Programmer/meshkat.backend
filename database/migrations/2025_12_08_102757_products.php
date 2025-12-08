@@ -19,7 +19,7 @@ return new class extends Migration
                 $table->date("date");
                 $table->time("time");
                 $table->string("mixture");
-                $table->string('tr_code');
+                $table->string('tr_code')->unique();
                 $table->string("categoury");
                 $table->timestamps();
             });

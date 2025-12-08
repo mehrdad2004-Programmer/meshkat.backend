@@ -25,14 +25,14 @@ return new class extends Migration
 
                 //relations
                 $table->foreign("username")
-                    ->references("username")
                     ->on("users")
+                    ->references("username")
                     ->onDelete("cascade")
                     ->onUpdate("cascade");
 
                 $table->foreign("tr_code")
-                    ->references("tr_code")
                     ->on("products")
+                    ->references("tr_code")
                     ->onDelete("cascade")
                     ->onUpdate("cascade");
             });
