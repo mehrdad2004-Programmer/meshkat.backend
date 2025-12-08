@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if(Schema::hasTable("access_logs")){
+        if(!Schema::hasTable("access_logs")){
             Schema::create("access_logs", function(Blueprint $table){
                 $table->id();
                 $table->string("tr_code");
