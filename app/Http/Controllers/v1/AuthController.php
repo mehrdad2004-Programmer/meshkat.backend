@@ -10,26 +10,31 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Morilog\Jalali\Jalalian;
 
 class AuthController extends Controller
 {
-    public function register(Request $request){
-        try{
-            //getting local date and time
-            $date = Carbon::now()->local('fa')->isoformat('Y/M/D');
+    public function register(Request $request)
+    {
+        try {
+            // Getting the Shamsi date
+            $date = Jalalian::forge(Carbon::now())->format('Y/m/d');  // Convert to Shamsi
+
+            // Getting time in Tehran timezone
             $time = Carbon::now()->setTimezone("Asia/Tehran")->format("H:i:s");
 
-            //setting requests
+            // Setting requests
             $all = $request->all();
             $all['date'] = $date;
             $all['time'] = $time;
             $all['ip_address'] = $request->ip();
             $all['user_agent'] = $request->userAgent();
             $all['op_type'] = "create_user";
+            $all['password'] = Hash::make($all['password']);
 
             $inserted = User::create($all);
 
-            if(!$inserted){
+            if (!$inserted) {
                 return response()->json([
                     "msg" => "not inserted",
                     "statuscode" => 400
@@ -40,8 +45,7 @@ class AuthController extends Controller
                 "msg" => "inserted",
                 "statuscode" => 201
             ], 201);
-
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 "msg" => $e->getMessage() . " at line " . $e->getLine(),
                 "statuscode" => 500
@@ -49,13 +53,16 @@ class AuthController extends Controller
         }
     }
 
-    public function login(Request $request){
-        try{
+
+    public function login(Request $request)
+    {
+        try {
             $user = User::where("username", $request->username)->first();
 
-            if($user && Hash::check($request->password, $user->password)){
+            if ($user && Hash::check($request->password, $user->password)) {
                 return response()->json([
                     "msg" => "logged in",
+                    "token" => $user->createToken('auth')->plainTextToken,
                     "statuscode" => 200
                 ], 200);
             }
@@ -64,8 +71,7 @@ class AuthController extends Controller
                 "msg" => "username or password is incorrect",
                 "statuscode" => 400
             ], 400);
-
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 "msg" => $e->getMessage() . " at line " . $e->getLine(),
                 "statuscode" => 500
@@ -73,13 +79,14 @@ class AuthController extends Controller
         }
     }
 
-    public function changePassword(Request $request){
-        try{
+    public function changePassword(Request $request)
+    {
+        try {
             $updated = User::where("username", $request->username)->update([
-                "password" => $request->password
+                "password" => Hash::make($request->password)
             ]);
 
-            if(!$updated){
+            if (!$updated) {
                 return response()->json([
                     "msg" => "not updated",
                     "statuscode" => 400
@@ -90,7 +97,7 @@ class AuthController extends Controller
                 "msg" => "updated",
                 "statuscode" => 200
             ], 200);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 "msg" => $e->getMessage() . " at line " . $e->getLine(),
                 "statuscode" => 500
@@ -98,11 +105,12 @@ class AuthController extends Controller
         }
     }
 
-    public function changeInfo(Request $request){
-        try{
+    public function changeInfo(Request $request)
+    {
+        try {
             $updated = User::where("username", $request->username)->update($request->all());
 
-            if(!$updated){
+            if (!$updated) {
                 return response()->json([
                     "msg" => "not updated",
                     "statuscode" => 400
@@ -113,7 +121,7 @@ class AuthController extends Controller
                 "msg" => "updated",
                 "statuscode" => 200
             ], 200);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 "msg" => $e->getMessage() . " at line " . $e->getLine(),
                 "statuscode" => 500
