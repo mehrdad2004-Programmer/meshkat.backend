@@ -20,7 +20,7 @@ return new class extends Migration
                 $table->time("time");
                 $table->string("mixture");
                 $table->string('tr_code')->unique();
-                $table->string("categoury");
+                $table->string("categoury")->index();
                 $table->timestamps();
             });
         }
