@@ -3,38 +3,29 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\v1\BasketModel;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Facades\Hash;
 use Morilog\Jalali\Jalalian;
+use Carbon\Carbon;
 
-class AuthController extends Controller
+class BasketController extends Controller
 {
-    public function register(Request $request)
+    public function insertBasket(Request $request)
     {
         try {
+
             // Getting the Shamsi date
             $date = Jalalian::forge(Carbon::now())->format('Y/m/d');  // Convert to Shamsi
 
             // Getting time in Tehran timezone
             $time = Carbon::now()->setTimezone("Asia/Tehran")->format("H:i:s");
 
-            // Setting requests
+
             $all = $request->all();
             $all['date'] = $date;
             $all['time'] = $time;
-            $all['password'] = Hash::make($all['password']);
 
-            $inserted = User::create($all);
-
-            if (!$inserted) {
-                return response()->json([
-                    "msg" => "not inserted",
-                    "statuscode" => 400
-                ], 400);
-            }
+            BasketModel::create($all);
 
             return response()->json([
                 "msg" => "inserted",
@@ -48,24 +39,23 @@ class AuthController extends Controller
         }
     }
 
-
-    public function login(Request $request)
+    public function deleteBasket(Request $request)
     {
         try {
-            $user = User::where("username", $request->username)->first();
 
-            if ($user && Hash::check($request->password, $user->password)) {
+            $deleted = BasketModel::where("tr_code", $request->tr_code)->delete();
+
+            if (!$deleted) {
                 return response()->json([
-                    "msg" => "logged in",
-                    "token" => $user->createToken('auth')->plainTextToken,
-                    "statuscode" => 200
-                ], 200);
+                    "msg" => "not deleted",
+                    "statuscode" => 400
+                ], 400);
             }
 
             return response()->json([
-                "msg" => "username or password is incorrect",
-                "statuscode" => 400
-            ], 400);
+                "msg" => "deleted",
+                "statuscode" => 200
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 "msg" => $e->getMessage() . " at line " . $e->getLine(),
@@ -74,11 +64,14 @@ class AuthController extends Controller
         }
     }
 
-    public function changePassword(Request $request)
+    public function updateBasket(Request $request)
     {
+
         try {
-            $updated = User::where("username", $request->username)->update([
-                "password" => Hash::make($request->password)
+            //this method will update status of basket to show wich products has been bought
+
+            $updated = BasketModel::where("tr_code", $request->tr_code)->update([
+                "status" => $request->status
             ]);
 
             if (!$updated) {
@@ -100,22 +93,16 @@ class AuthController extends Controller
         }
     }
 
-    public function changeInfo(Request $request)
+    public function readBasket(Request $request)
     {
         try {
-            $updated = User::where("username", $request->username)->update($request->all());
-
-            if (!$updated) {
-                return response()->json([
-                    "msg" => "not updated",
-                    "statuscode" => 400
-                ], 400);
-            }
+            $baskets = BasketModel::where("username", $request->username)->get();
 
             return response()->json([
-                "msg" => "updated",
+                "msg" => $baskets,
                 "statuscode" => 200
             ], 200);
+            
         } catch (\Exception $e) {
             return response()->json([
                 "msg" => $e->getMessage() . " at line " . $e->getLine(),
