@@ -21,6 +21,7 @@ return new class extends Migration
                 $table->string("mixture");
                 $table->string('tr_code')->unique();
                 $table->string("categoury")->index();
+                $table->string("thumbnail");
                 $table->timestamps();
             });
         }

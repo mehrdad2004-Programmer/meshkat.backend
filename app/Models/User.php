@@ -4,7 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Models\v1\AccessLogsModel;
 use App\Models\v1\BasketModel;
 use App\Models\v1\PaymentModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -53,10 +52,6 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public function user_access_logs(){
-        return $this->hasMany(AccessLogsModel::class, "username","username");
     }
 
     public function user_basket(){
