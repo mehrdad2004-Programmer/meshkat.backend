@@ -4,7 +4,6 @@ namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\v1\AccessLogsModel;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Exception;
@@ -27,9 +26,6 @@ class AuthController extends Controller
             $all = $request->all();
             $all['date'] = $date;
             $all['time'] = $time;
-            $all['ip_address'] = $request->ip();
-            $all['user_agent'] = $request->userAgent();
-            $all['op_type'] = "create_user";
             $all['password'] = Hash::make($all['password']);
 
             $inserted = User::create($all);
