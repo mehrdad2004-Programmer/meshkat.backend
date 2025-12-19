@@ -17,7 +17,7 @@ Route::prefix("v1")->group(function(){
     Route::prefix("products")->group(function(){
         Route::get("get", [ProductsController::class, "readProducts"]);
         Route::post("insert", [ProductsController::class, "insertProducts"]);
-        Route::patch("update", [ProductsController::class, "updateProducts"]);
+        Route::post("update", [ProductsController::class, "updateProducts"]);
         Route::delete("delete", [ProductsController::class, "deleteProducts"]);
     });
 

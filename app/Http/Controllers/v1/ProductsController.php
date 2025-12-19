@@ -11,6 +11,16 @@ use Morilog\Jalali\Jalalian;
 
 class ProductsController extends Controller
 {
+
+    public function generate_code(){
+        $id = ProductsModel::orderBy("id", "desc")->first();
+
+        $code = $id ? ($id->id * 1000) + 1 : 1000;
+
+        return $code;
+
+    }
+
     public function insertProducts(Request $request)
     {
         try {
@@ -24,6 +34,10 @@ class ProductsController extends Controller
             $all = $request->all();
             $all['date'] = $date;
             $all['time'] = $time;
+            $all['tr_code'] = $this->generate_code();
+            // $all['username'] = $request->username;
+            // $all['ip_address'] = $request->ip();
+            // $all['user_agent'] = $request->userAgent();
 
             if ($request->hasFile("thumbnail")) {
                 // Get the uploaded file
@@ -34,8 +48,10 @@ class ProductsController extends Controller
 
                 // Store the file in the 'public' disk and move it to the 'uploads' directory
                 if ($file->storeAs('uploads', $filename, 'public')) {
+
                     // Add the filename to the data to be inserted
                     $all['thumbnail'] = $filename;
+
                     $inserted = ProductsModel::create($all);
 
                     if (!$inserted) {
@@ -57,6 +73,10 @@ class ProductsController extends Controller
                     "statuscode" => 400
                 ], 400);
             }
+            return response()->json([
+                "msg" => "thumbnail is required",
+                "statuscode" => 400
+            ],400);
         } catch (\Exception $e) {
             return response()->json([
                 "msg" => $e->getMessage() . " at line " . $e->getLine(),
@@ -132,6 +152,23 @@ class ProductsController extends Controller
     {
         try {
             $result = ProductsModel::query();
+
+            if($request->tr_code){
+                $product = ProductsModel::where("tr_code", $request->tr_code)->first();
+
+                if($product){
+                    return response()->json([
+                        "msg" => $product,
+                        "statuscode" => 200
+                    ], 200);
+                }
+
+                return response()->json([
+                    "msg" => "not found",
+                    "statuscode" => 404
+                ], 404);
+
+            }
 
             // For paginated result
             if ($request->panel) {
