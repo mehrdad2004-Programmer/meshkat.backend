@@ -3,6 +3,7 @@
 namespace App\Models\v1;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\v1\ShoppingModel;
 
 class ShoppingDetailsModel extends Model
 {
@@ -12,4 +13,8 @@ class ShoppingDetailsModel extends Model
         "tr_code",
         "p_code",
     ];
+
+    public function shopping_details(){
+        return $this->belongsTo(ShoppingModel::class, "tr_code", "tr_code");
+    }
 }
