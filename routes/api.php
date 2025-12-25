@@ -3,6 +3,7 @@
 use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\BasketController;
 use App\Http\Controllers\v1\ProductsController;
+use App\Http\Controllers\v1\ShoppingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,5 +27,11 @@ Route::prefix("v1")->group(function(){
         Route::post("insert", [BasketController::class, "insertBasket"]);
         Route::delete("delete", [BasketController::class, "deleteBasket"]);
         Route::patch("update", [BasketController::class, "updateBasket"]);
+    });
+
+    Route::prefix("shopping")->group(function(){
+        Route::get("get", [ShoppingController::class, "get"]);
+        Route::post("insert", [ShoppingController::class, "insert"]);
+        Route::patch("update", [ShoppingController::class, "update"]);
     });
 });

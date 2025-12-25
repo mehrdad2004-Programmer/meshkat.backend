@@ -5,6 +5,7 @@ namespace App\Models\v1;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\v1\BasketModel;
 use App\Models\v1\PaymentModel;
+use App\Models\v1\ShoppingDetailsModel;
 
 class ProductsModel extends Model
 {
@@ -27,6 +28,11 @@ class ProductsModel extends Model
 
     public function products_payment(){
         return $this->hasMany(PaymentModel::class, "tr_code", "tr_code");
+    }
+
+    public function shopping_products()
+    {
+        return $this->hasMany(ShoppingDetailsModel::class, 'p_code', 'tr_code');
     }
 
 }
