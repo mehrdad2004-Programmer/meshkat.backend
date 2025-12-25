@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\v1\BasketModel;
 use App\Models\v1\PaymentModel;
+use App\Models\v1\ShoppingModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -60,5 +61,9 @@ class User extends Authenticatable
 
     public function user_payment(){
         return $this->hasMany(PaymentModel::class, "username", "username");
+    }
+
+    public function user_shopping(){
+        return $this->hasMany(ShoppingModel::class, "username", "username");
     }
 }
