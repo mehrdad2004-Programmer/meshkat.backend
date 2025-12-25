@@ -96,10 +96,20 @@ class BasketController extends Controller
     public function readBasket(Request $request)
     {
         try {
-            $baskets = BasketModel::with([
+            $query = BasketModel::query();
+
+            if($request->status){
+                $query->where("status", $request->status);
+            }
+
+            if($request->username){
+                $query->where("username", $request->username);
+            }
+
+            $baskets = $query->with([
                 "products_basket",
                 "user_basket"
-            ])->where("username", $request->username)->get();
+            ])->groupBy("username")->get();
 
             return response()->json([
                 "msg" => $baskets,
