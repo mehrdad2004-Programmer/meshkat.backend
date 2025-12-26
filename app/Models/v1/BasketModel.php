@@ -15,6 +15,7 @@ class BasketModel extends Model
         "date",
         "time",
         "username",
+        "weight",
         "status",
     ];
 

@@ -3,20 +3,61 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\v1\BasketModel;
 use App\Models\v1\ShoppingDetailsModel;
 use App\Models\v1\ShoppingModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Termwind\Components\Raw;
+use Carbon\Carbon;
+use Morilog\Jalali\Jalalian;
 
 class ShoppingController extends Controller
 {
+    public function generate_code(){
+        $id = ShoppingModel::orderBy("id", "desc")->first();
+
+        $code = $id ? $id->id + 1000 : 1000;
+
+        return $code;
+    }
+
     public function insert(Request $request)
     {
         try {
+
+            // Getting the Shamsi date
+            $date = Jalalian::forge(Carbon::now())->format('Y/m/d');  // Convert to Shamsi
+
+            // Getting time in Tehran timezone
+            $time = Carbon::now()->setTimezone("Asia/Tehran")->format("H:i:s");
+
+            $basket = BasketModel::where("status", "pending")
+                ->where("username", $request->username)->get()->toArray();
+
+
+            $new_basket = [];
+
+            foreach($basket as $item){
+                $item['p_code'] = $item['tr_code'];
+                $item['tr_code'] = $this->generate_code();
+                array_push($new_basket, $item);
+            }
+
+            $request->merge([
+                "tr_code" => $this->generate_code(),
+                "date" => $date,
+                "time" => $time,
+                "details" => $new_basket
+            ]);
+
             DB::beginTransaction();
             ShoppingModel::create($request->all());
-            ShoppingDetailsModel::insert($request->details);
+            foreach($request->details as $item){
+                ShoppingDetailsModel::create($item);
+            }
+            BasketModel::where("username", $request->username)
+            ->where("status", "pending")
+            ->delete();
             DB::commit();
 
             return response()->json([
@@ -46,8 +87,12 @@ class ShoppingController extends Controller
                 $data->where("status", $request->status);
             }
 
+            if($request->tr_code){
+                $data->where("tr_code", $request->tr_code);
+            }
 
-            $res = $data->get();
+
+            $res = $data->orderBy("id", 'desc')->get();
 
             if ($res->isEmpty()) {
                 return response()->json([

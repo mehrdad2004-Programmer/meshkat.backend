@@ -43,7 +43,7 @@ class BasketController extends Controller
     {
         try {
 
-            $deleted = BasketModel::where("tr_code", $request->tr_code)->delete();
+            $deleted = BasketModel::where("id", $request->id)->delete();
 
             if (!$deleted) {
                 return response()->json([
@@ -109,7 +109,7 @@ class BasketController extends Controller
             $baskets = $query->with([
                 "products_basket",
                 "user_basket"
-            ])->groupBy("username")->get();
+            ])->get();
 
             return response()->json([
                 "msg" => $baskets,

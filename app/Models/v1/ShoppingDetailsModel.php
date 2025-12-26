@@ -13,6 +13,7 @@ class ShoppingDetailsModel extends Model
     protected $fillable = [
         "tr_code",
         "p_code",
+        "weight"
     ];
 
     public function shopping_details()

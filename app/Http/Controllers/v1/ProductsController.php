@@ -15,7 +15,7 @@ class ProductsController extends Controller
     public function generate_code(){
         $id = ProductsModel::orderBy("id", "desc")->first();
 
-        $code = $id ? ($id->id * 1000) + 1 : 1000;
+        $code = $id ? ($id->id + 1000) : 1000;
 
         return $code;
 
@@ -178,6 +178,16 @@ class ProductsController extends Controller
                     "msg" => $paginate,
                     "statuscode" => $statuscode
                 ], $statuscode);
+            }
+
+            if($request->trend){
+                $result = ProductsModel::where("trend", "1")->orderBy("id", "desc")->take(5)->get();
+                $statuscode = $result->isEmpty() ? 404 : 200;
+
+                return response()->json([
+                    "msg" => $result,
+                    "statuscode" => $statuscode
+                ]);
             }
 
             // For the last 5 products
