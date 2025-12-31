@@ -4,7 +4,6 @@ use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\BasketController;
 use App\Http\Controllers\v1\ProductsController;
 use App\Http\Controllers\v1\ShoppingController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix("v1")->group(function(){

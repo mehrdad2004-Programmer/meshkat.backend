@@ -156,9 +156,17 @@ class ProductsController extends Controller
             if($request->tr_code){
                 $product = ProductsModel::where("tr_code", $request->tr_code)->first();
 
+                $related = ProductsModel::where("categoury", $product->categoury)
+                ->where("tr_code", "!=", $product->tr_code)
+                ->orderBy("id", "desc")
+                ->take(6)
+                ->get();
+
+
                 if($product){
                     return response()->json([
                         "msg" => $product,
+                        "related" => $related,
                         "statuscode" => 200
                     ], 200);
                 }
@@ -181,7 +189,7 @@ class ProductsController extends Controller
             }
 
             if($request->trend){
-                $result = ProductsModel::where("trend", "1")->orderBy("id", "desc")->take(5)->get();
+                $result = ProductsModel::where("trend", "1")->orderBy("id", "desc")->take(8)->get();
                 $statuscode = $result->isEmpty() ? 404 : 200;
 
                 return response()->json([
@@ -191,7 +199,7 @@ class ProductsController extends Controller
             }
 
             // For the last 5 products
-            $lastFive = $result->orderBy("id", "desc")->take(5)->get();
+            $lastFive = $result->orderBy("id", "desc")->take(8)->get();
             $statuscode = $lastFive->isEmpty() ? 404 : 200;
 
             return response()->json([
