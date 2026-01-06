@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Support\Facades\Hash;
 use Morilog\Jalali\Jalalian;
 
+
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -57,6 +58,7 @@ class AuthController extends Controller
             if ($user && Hash::check($request->password, $user->password)) {
                 return response()->json([
                     "msg" => "logged in",
+                    "role" => $user->role,
                     "token" => $user->createToken('auth')->plainTextToken,
                     "statuscode" => 200
                 ], 200);

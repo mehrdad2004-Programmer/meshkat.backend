@@ -120,11 +120,25 @@ class ShoppingController extends Controller
                 "status" => $request->status
             ]);
 
+
             if (!$updated) {
                 return response()->json([
                     "msg" => "not updated",
                     "statuscode" => 400
                 ], 400);
+            }
+
+            if($updated && $request->status == "accepted"){
+                $data = [
+                    "phone_no" => $request->username,
+                    "params" => [
+                        "param1" => "hello",
+                        "param2" => "newlink"
+                    ]
+                ];
+
+                //sending sms
+                app()->make(GhasedakSMSController::class)->sendMessage($request->merge($data));
             }
 
             return response()->json([
@@ -134,6 +148,38 @@ class ShoppingController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 "msg" => $e->getMessage() . " at line " . $e->getLine(),
+                "statuscode" => 500
+            ], 500);
+        }
+    }
+
+    public function delete(Request $request){
+        try{
+            $deleted = ShoppingModel::where("tr_code", $request->tr_code)->delete();
+            if(!$deleted){
+                return response()->json([
+                    "msg" => "not deleted",
+                    "statuscode" => 400
+                ], 400);
+            }
+
+            $data = [
+                "phone_no" => $request->username,
+                "params" => [
+                    "param1" => "hello",
+                    "param2" => "newlink"
+                ]
+            ];
+
+            app()->make(GhasedakSMSController::class)->sendMessage($request->merge($data));
+            
+            return response()->json([
+                "msg" => "deleted",
+                "statuscode" => 200
+            ], 200);
+        }catch(\Exception $e){
+            return response()->json([
+                "msg" => $e->getMessage() . ' at line ' . $e->getLine(),
                 "statuscode" => 500
             ], 500);
         }

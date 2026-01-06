@@ -92,6 +92,7 @@ class ProductsController extends Controller
             if ($request->hasFile('thumbnail')) {
                 $file = $request->file('thumbnail');
                 $filename = time() . '.' . $file->getClientOriginalExtension();
+
                 // Store the new thumbnail in the 'uploads' folder under the public disk
                 $file->storeAs('uploads', $filename, 'public');
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\v1\AuthController;
 use App\Http\Controllers\v1\BasketController;
 use App\Http\Controllers\v1\ProductsController;
 use App\Http\Controllers\v1\ShoppingController;
+use App\Http\Controllers\v1\GhasedakSMSController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix("v1")->group(function(){
@@ -32,5 +33,10 @@ Route::prefix("v1")->group(function(){
         Route::get("get", [ShoppingController::class, "get"]);
         Route::post("insert", [ShoppingController::class, "insert"]);
         Route::patch("update", [ShoppingController::class, "update"]);
+        Route::delete("delete", [ShoppingController::class, "delete"]);
+    });
+
+    Route::prefix("sms")->group(function(){
+        Route::post("sendMessage", [GhasedakSMSController::class, "sendMessage"]);
     });
 });
