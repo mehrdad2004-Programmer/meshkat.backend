@@ -199,6 +199,17 @@ class ProductsController extends Controller
                 ]);
             }
 
+            //by category
+            if($request->category){
+                $result = ProductsModel::where('categoury', $request->category)->get();
+                $statuscode = $result->isEmpty() ? 404 : 200;
+
+                return response()->json([
+                    "msg" => $result->chunk(4) ?? null,
+                    "statuscode" => $statuscode
+                ], $statuscode);
+            }
+
             // For the last 5 products
             $lastFive = $result->orderBy("id", "desc")->take(8)->get();
             $statuscode = $lastFive->isEmpty() ? 404 : 200;

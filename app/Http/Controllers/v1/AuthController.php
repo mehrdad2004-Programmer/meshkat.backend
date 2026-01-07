@@ -60,6 +60,7 @@ class AuthController extends Controller
                     "msg" => "logged in",
                     "role" => $user->role,
                     "token" => $user->createToken('auth')->plainTextToken,
+                    "date" => Jalalian::now()->format("Y/m/d"),
                     "statuscode" => 200
                 ], 200);
             }
